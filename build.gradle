@@ -7,8 +7,6 @@ shadowJar {
     from sourceSets.main.resources
 }
 
-group = 'com.cylorun'
-version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
