@@ -52,7 +52,7 @@ public class PositionUtil {
     }
 
     public static boolean isF3c(String f3c) {
-        return f3c.contains("/execute in minecraft");
+        return f3c.contains("/execute in minecraft"); // shoulod prolly use a regex here
     }
 
     public static List<Vec2i> getStrongholdPositions() {
@@ -94,9 +94,8 @@ public class PositionUtil {
     }
 
     public static String getDistanceHexColor(int distance, Vec2i.Dimension dim) {
-        if (dim == Vec2i.Dimension.OVERWORLD) {
-            distance/=8;
-        }
+        if (dim == Vec2i.Dimension.OVERWORLD) distance /= 8;
+
         if (distance <= 3) {
             return "#0BC531";
         }

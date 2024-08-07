@@ -26,12 +26,12 @@ public class StrongholdPanelEntry extends JPanel {
         this.draw(false);
     }
 
-    public void draw(boolean bold) {
+    public void draw(boolean isClosest) {
         this.removeAll();
-        this.add(createCenteredLabel(String.format("(%s, %s)", owCoords.x, owCoords.z), bold));
-        this.add(createCenteredLabelWithColor(String.format("%s", this.getDistance()), PositionUtil.getDistanceHexColor(this.getDistance(), this.playerdim), bold));
-        this.add(createCenteredLabel(String.format("(%s, %s)", owCoords.div(8).x, owCoords.div(8).z), bold));
-        this.add(createCenteredLabel(String.format("%s", this.getAngle()), bold));
+        this.add(createCenteredLabel(String.format("(%s, %s)", owCoords.x, owCoords.z), isClosest));
+        this.add(createCenteredLabelWithColor(String.format("%s", this.getDistance()), PositionUtil.getDistanceHexColor(this.getDistance(), this.playerdim), isClosest));
+        this.add(createCenteredLabel(String.format("(%s, %s)", owCoords.div(8).x, owCoords.div(8).z), isClosest));
+        this.add(createCenteredLabel(String.format("%s", this.getAngle()), isClosest));
     }
 
     public void setBold() {
@@ -46,16 +46,16 @@ public class StrongholdPanelEntry extends JPanel {
         return playerdim == Vec2i.Dimension.NETHER ? owCoords.div(8).angle(playerPos) : owCoords.angle(playerPos);
     }
 
-    private JLabel createCenteredLabel(String text, boolean bold) {
-        text = bold ? String.format("<b>%s</b>", text) : text;
+    private JLabel createCenteredLabel(String text, boolean isClosest) {
+        text = isClosest ? String.format("<b>%s</b>", text) : text;
         String htmlText = String.format("<html><body style='text-align:center;'>%s</body></html>", text);
         JLabel label = new JLabel(htmlText);
         label.setHorizontalAlignment(SwingConstants.CENTER);
         return label;
     }
 
-    private JLabel createCenteredLabelWithColor(String text, String color, boolean bold) {
-        text = bold ? String.format("<b>%s</b>", text) : text;
+    private JLabel createCenteredLabelWithColor(String text, String color, boolean isClosest) {
+        text = isClosest ? String.format("<b>%s<u></b>", text) : text;
         String htmlText = String.format("<html><body style='text-align:center;color:%s;'>%s</body></html>", color, text);
         JLabel label = new JLabel(htmlText);
         label.setHorizontalAlignment(SwingConstants.CENTER);

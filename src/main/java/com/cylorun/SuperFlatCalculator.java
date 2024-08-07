@@ -14,7 +14,7 @@ public class SuperFlatCalculator {
         UIManager.setLookAndFeel(new FlatDarculaLaf());
         CalcFrame.getInstance();
 
-        ClipboardReader reader = new ClipboardReader(SuperFlatCalculator::doUpdate);
+        new ClipboardReader(SuperFlatCalculator::doUpdate);
     }
 
     private static void doUpdate(String clipboard) {

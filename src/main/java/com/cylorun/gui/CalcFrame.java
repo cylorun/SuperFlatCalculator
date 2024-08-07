@@ -6,17 +6,22 @@ import com.cylorun.utils.PositionUtil;
 import com.cylorun.utils.ResourceUtil;
 import com.cylorun.utils.Vec2i;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class CalcFrame extends JFrame {
 
+    private JPanel contentPanel;
     private JPanel strongholdPanel;
     private JPanel headerPanel;
     private static CalcFrame instance;
@@ -28,11 +33,13 @@ public class CalcFrame extends JFrame {
         this.setResizable(false);
         this.setAlwaysOnTop(true);
         this.setAppIcon();
+        this.contentPanel = new JPanel(new BorderLayout());
         this.addHeaders();
         this.strongholdPanel = new JPanel();
         this.strongholdPanel.setLayout(new BoxLayout(this.strongholdPanel, BoxLayout.Y_AXIS));
         this.strongholdPanel.add(new JLabel("<html>&emsp;&emsp; Waiting for F3+C</html>"));
-        this.add(this.strongholdPanel, BorderLayout.CENTER);
+        this.contentPanel.add(this.strongholdPanel, BorderLayout.CENTER);
+        this.add(this.contentPanel);
         SuperFlatCalculatorOptions options = SuperFlatCalculatorOptions.getInstance();
 
         if (options.win_loc.length == 2) {
@@ -55,20 +62,20 @@ public class CalcFrame extends JFrame {
 
     private void addHeaders() {
         this.headerPanel = new JPanel(new GridLayout(1, 4));
-        JLabel loc = new JLabel("<html><b><u>Location</u></b></html>");
+        JLabel loc = new JLabel("<html><h3><b><u>Location</u></b><h3></html>");
         loc.setHorizontalAlignment(SwingConstants.CENTER);
         this.headerPanel.add(loc);
-        JLabel dist = new JLabel("<html><b><u>Distance</u></b></html>");
+        JLabel dist = new JLabel("<html><h3><b><u>Distance</u></b><h3></html>");
         dist.setHorizontalAlignment(SwingConstants.CENTER);
         this.headerPanel.add(dist);
-        JLabel nether = new JLabel("<html><b><u>Nether</u></b></html>");
+        JLabel nether = new JLabel("<html><h3><b><u>Nether</u></b><h3></html>");
         nether.setHorizontalAlignment(SwingConstants.CENTER);
         this.headerPanel.add(nether);
-        JLabel angle = new JLabel("<html><b><u>Angle</u></b></html>");
+        JLabel angle = new JLabel("<html><h3><b><u>Angle</u></b><h3></html>");
         angle.setHorizontalAlignment(SwingConstants.CENTER);
         this.headerPanel.add(angle);
-        this.headerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
-        this.add(headerPanel, BorderLayout.NORTH);
+        this.headerPanel.setBorder(new EmptyBorder(10, 10, 0, 10));
+        this.contentPanel.add(headerPanel, BorderLayout.NORTH);
     }
 
     private void setAppIcon() {
@@ -82,19 +89,41 @@ public class CalcFrame extends JFrame {
         this.setIconImage(img);
     }
 
+    private BufferedImage getOverlayImage() {
+        int w = this.getWidth();
+        int h = this.getHeight();
+
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        this.contentPanel.paint(img.getGraphics());
+        return img;
+    }
+
+    private void saveOverlay(BufferedImage img) {
+        try {
+            ImageIO.write(img, "png", new File("sfc_overlay.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public synchronized void updateCoords(Vec2i pos, Vec2i.Dimension dim) {
         this.strongholdPanel.removeAll();
         List<Vec2i> strongholds = PositionUtil.getClosestStrongholds(pos, dim);
+        if (!strongholds.isEmpty()) this.strongholdPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
+
         for (Vec2i sh : strongholds) {
             StrongholdPanelEntry entry = new StrongholdPanelEntry(sh, pos, dim);
             if (strongholds.indexOf(sh) == 0) {
                 entry.setBold();
             }
             this.strongholdPanel.add(entry);
+            this.strongholdPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
             this.strongholdPanel.add(Box.createVerticalStrut(1));
             this.strongholdPanel.revalidate();
             this.strongholdPanel.repaint();
         }
+
+        Executors.newSingleThreadScheduledExecutor().schedule(() -> this.saveOverlay(this.getOverlayImage()), 1, TimeUnit.SECONDS);
     }
 
     public static synchronized CalcFrame getInstance() {
