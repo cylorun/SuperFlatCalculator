@@ -112,6 +112,6 @@ public class PositionUtil {
         if (distance <= 150) {
             return "#DF6530";
         }
-        return "#A71F00";
+        return "#cf401f";
     }
 }

@@ -4,6 +4,7 @@ import com.cylorun.utils.PositionUtil;
 import com.cylorun.utils.Vec2i;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 public class StrongholdPanelEntry extends JPanel {
@@ -13,13 +14,12 @@ public class StrongholdPanelEntry extends JPanel {
     private Vec2i.Dimension playerdim;
 
     public StrongholdPanelEntry(Vec2i owCoords, Vec2i playerPos, Vec2i.Dimension playerdim) {
-        super(new GridLayout(1, 7));
+        super(new GridLayout(1, 4));
         this.owCoords = owCoords;
         this.playerdim = playerdim;
         this.playerPos = playerPos;
-
+        this.setBorder(new EmptyBorder(5, 5, 5, 5));
         this.draw();
-
     }
 
     public void draw() {
@@ -29,7 +29,7 @@ public class StrongholdPanelEntry extends JPanel {
     public void draw(boolean bold) {
         this.removeAll();
         this.add(createCenteredLabel(String.format("(%s, %s)", owCoords.x, owCoords.z), bold));
-        this.add(createCenteredLabelWithColor(String.format("%s", this.getDistance()), PositionUtil.getDistanceHexColor(this.getDistance(), this.playerdim),bold));
+        this.add(createCenteredLabelWithColor(String.format("%s", this.getDistance()), PositionUtil.getDistanceHexColor(this.getDistance(), this.playerdim), bold));
         this.add(createCenteredLabel(String.format("(%s, %s)", owCoords.div(8).x, owCoords.div(8).z), bold));
         this.add(createCenteredLabel(String.format("%s", this.getAngle()), bold));
     }

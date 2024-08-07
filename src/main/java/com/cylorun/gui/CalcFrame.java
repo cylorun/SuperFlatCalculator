@@ -18,21 +18,21 @@ import java.util.List;
 public class CalcFrame extends JFrame {
 
     private JPanel strongholdPanel;
-
     private JPanel headerPanel;
     private static CalcFrame instance;
 
     private CalcFrame() {
         super("SFC " + SuperFlatCalculator.VERSION);
-        this.setLayout(new GridLayout(3,1));
-        this.setSize(new Dimension(350, 250));
+        this.setLayout(new BorderLayout());
+        this.setSize(new Dimension(370, 200));
         this.setResizable(false);
         this.setAlwaysOnTop(true);
         this.setAppIcon();
         this.addHeaders();
-        this.strongholdPanel = new JPanel(new GridLayout(6,1));
-        this.strongholdPanel.add(new JLabel("Waiting for F3+C"));
-        this.add(this.strongholdPanel);
+        this.strongholdPanel = new JPanel();
+        this.strongholdPanel.setLayout(new BoxLayout(this.strongholdPanel, BoxLayout.Y_AXIS));
+        this.strongholdPanel.add(new JLabel("<html>&emsp;&emsp; Waiting for F3+C</html>"));
+        this.add(this.strongholdPanel, BorderLayout.CENTER);
         SuperFlatCalculatorOptions options = SuperFlatCalculatorOptions.getInstance();
 
         if (options.win_loc.length == 2) {
@@ -54,22 +54,21 @@ public class CalcFrame extends JFrame {
     }
 
     private void addHeaders() {
-        this.headerPanel = new JPanel(new GridLayout(1,4));
-        JLabel loc = new JLabel("Location");
+        this.headerPanel = new JPanel(new GridLayout(1, 4));
+        JLabel loc = new JLabel("<html><b><u>Location</u></b></html>");
         loc.setHorizontalAlignment(SwingConstants.CENTER);
         this.headerPanel.add(loc);
-        JLabel dist = new JLabel("Distance");
+        JLabel dist = new JLabel("<html><b><u>Distance</u></b></html>");
         dist.setHorizontalAlignment(SwingConstants.CENTER);
         this.headerPanel.add(dist);
-        JLabel nether = new JLabel("Nether");
+        JLabel nether = new JLabel("<html><b><u>Nether</u></b></html>");
         nether.setHorizontalAlignment(SwingConstants.CENTER);
         this.headerPanel.add(nether);
-        JLabel angle = new JLabel("Angle");
+        JLabel angle = new JLabel("<html><b><u>Angle</u></b></html>");
         angle.setHorizontalAlignment(SwingConstants.CENTER);
         this.headerPanel.add(angle);
-
-
-        this.add(headerPanel);
+        this.headerPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        this.add(headerPanel, BorderLayout.NORTH);
     }
 
     private void setAppIcon() {
@@ -83,7 +82,7 @@ public class CalcFrame extends JFrame {
         this.setIconImage(img);
     }
 
-    public void updateCoords(Vec2i pos, Vec2i.Dimension dim) {
+    public synchronized void updateCoords(Vec2i pos, Vec2i.Dimension dim) {
         this.strongholdPanel.removeAll();
         List<Vec2i> strongholds = PositionUtil.getClosestStrongholds(pos, dim);
         for (Vec2i sh : strongholds) {
@@ -92,12 +91,11 @@ public class CalcFrame extends JFrame {
                 entry.setBold();
             }
             this.strongholdPanel.add(entry);
-            this.strongholdPanel.add(new JSeparator(SwingConstants.HORIZONTAL));
-            this.strongholdPanel.repaint();
+            this.strongholdPanel.add(Box.createVerticalStrut(1));
             this.strongholdPanel.revalidate();
+            this.strongholdPanel.repaint();
         }
     }
-
 
     public static synchronized CalcFrame getInstance() {
         if (instance == null) {
