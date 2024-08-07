@@ -90,13 +90,28 @@ public class CalcFrame extends JFrame {
     }
 
     private BufferedImage getOverlayImage() {
-        int w = this.getWidth();
-        int h = this.getHeight();
+        int w = this.contentPanel.getWidth();
+        int h = this.contentPanel.getHeight();
 
-        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-        this.contentPanel.paint(img.getGraphics());
+        int scaleFactor = 3;
+        int scaledWidth = w * scaleFactor;
+        int scaledHeight = h * scaleFactor;
+
+        BufferedImage img = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = img.createGraphics();
+
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+        g2d.scale(scaleFactor, scaleFactor);
+
+        this.contentPanel.paint(g2d);
+        g2d.dispose();
+
         return img;
     }
+
 
     private void saveOverlay(BufferedImage img) {
         try {
